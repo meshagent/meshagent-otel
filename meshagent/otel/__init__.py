@@ -40,8 +40,7 @@ def _call_once(fn):
 
 
 @_call_once
-def otel_config(*, level = logging.INFO, service_name: str = "meshagent-service"):
-
+def otel_config(*, level=logging.INFO, service_name: str = "meshagent-service"):
     attributes = {
         SERVICE_NAME: service_name,
     }
@@ -77,7 +76,9 @@ def otel_config(*, level = logging.INFO, service_name: str = "meshagent-service"
             logger_provider = LoggerProvider(resource=resource)
             _logs.set_logger_provider(logger_provider)
 
-            logger_provider.add_log_record_processor(BatchLogRecordProcessor(logs_exporter))
+            logger_provider.add_log_record_processor(
+                BatchLogRecordProcessor(logs_exporter)
+            )
 
             if add_console_exporters:
                 logger_provider.add_log_record_processor(
@@ -86,7 +87,9 @@ def otel_config(*, level = logging.INFO, service_name: str = "meshagent-service"
 
         if otel_traces_endpoint is not None:
             tracer_provider = TracerProvider(resource=resource)
-            processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=otel_traces_endpoint))
+            processor = BatchSpanProcessor(
+                OTLPSpanExporter(endpoint=otel_traces_endpoint)
+            )
             tracer_provider.add_span_processor(processor)
             if add_console_exporters:
                 tracer_provider.add_span_processor(
@@ -123,7 +126,5 @@ def otel_config(*, level = logging.INFO, service_name: str = "meshagent-service"
     else:
         logging.basicConfig(level=level)
 
-__all__ = [
-    otel_config,
-    __version__
-]
+
+__all__ = [otel_config, __version__]
