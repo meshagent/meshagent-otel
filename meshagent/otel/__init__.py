@@ -12,6 +12,7 @@ from opentelemetry.sdk.metrics.export import (
     PeriodicExportingMetricReader,
     ConsoleMetricExporter,
 )
+from opentelemetry.sdk.metrics.view import DropAggregation, View
 from opentelemetry import _logs
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
@@ -23,6 +24,11 @@ import logging
 import os
 
 from .version import __version__
+
+_DROPPED_METRIC_NAMES = (
+    "otel.sdk.span.live",
+    "otel.sdk.span.started",
+)
 
 
 def _call_once(fn):
@@ -37,6 +43,13 @@ def _call_once(fn):
         return result
 
     return wrapper
+
+
+def _metric_views() -> tuple[View, ...]:
+    return tuple(
+        View(instrument_name=name, aggregation=DropAggregation())
+        for name in _DROPPED_METRIC_NAMES
+    )
 
 
 @_call_once
@@ -115,7 +128,11 @@ def otel_config(*, level=logging.INFO, service_name: str = "meshagent-service"):
             if add_console_exporters:
                 readers.append(PeriodicExportingMetricReader(ConsoleMetricExporter()))
 
-            meter_provider = MeterProvider(resource=resource, metric_readers=readers)
+            meter_provider = MeterProvider(
+                resource=resource,
+                metric_readers=readers,
+                views=_metric_views(),
+            )
             metrics.set_meter_provider(meter_provider)
 
     if logger_provider is not None:
