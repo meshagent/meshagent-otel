@@ -26,6 +26,11 @@ import os
 from .version import __version__
 
 _DROPPED_METRIC_NAMES = (
+    "otel.sdk.log.created",
+    "otel.sdk.processor.log.processed",
+    "otel.sdk.processor.log.queue.size",
+    "otel.sdk.processor.span.processed",
+    "otel.sdk.processor.span.queue.size",
     "otel.sdk.span.live",
     "otel.sdk.span.started",
 )
