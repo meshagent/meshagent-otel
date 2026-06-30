@@ -149,4 +149,4 @@ def otel_config(*, level=logging.INFO, service_name: str = "meshagent-service"):
         logging.basicConfig(level=level)
 
 
-__all__ = [otel_config, __version__]
+__all__ = ["otel_config", "__version__"]
